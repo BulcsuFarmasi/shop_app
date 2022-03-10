@@ -17,7 +17,7 @@ class Products with ChangeNotifier {
       description: 'A nice pair of trousers.',
       price: 59.99,
       imageUrl:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
     ),
     Product(
       id: 'p3',
@@ -37,10 +37,24 @@ class Products with ChangeNotifier {
 
   Product findById(String id) => _items.firstWhere((Product item) => item.id == id);
 
-  List<Product> get items => [..._items];
+  List<Product> get items {
+    return (_showFavoritesOnly) ? [..._items.where((Product item) => item.isFavorite)] : [..._items];
+  }
+
+  bool _showFavoritesOnly = false;
+
+  void showFavoritesOnly() {
+    _showFavoritesOnly = true;
+    notifyListeners();
+  }
+
+  void showAll() {
+    _showFavoritesOnly = false;
+    notifyListeners();
+  }
 
   void addProduct() {
-      // _items.add();
-      notifyListeners();
+    // _items.add();
+    notifyListeners();
   }
 }
