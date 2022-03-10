@@ -9,7 +9,6 @@ class ProductItem extends StatelessWidget {
     final theme = Theme.of(context);
     final navigator = Navigator.of(context);
     final product = Provider.of<Product>(context, listen: false);
-    print('product rebuilds');
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
       child: GridTile(
