@@ -10,7 +10,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final navigator = Navigator.of(context);
-    final product = Provider.of<Product>(context, listen: false);
+    final product = Provider.of<Product>(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
       child: GridTile(
