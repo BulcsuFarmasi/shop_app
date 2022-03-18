@@ -16,6 +16,10 @@ class Cart with ChangeNotifier {
 
   int get itemCount => _items.length;
 
+  double get totalAmount {
+    return _items.values.fold(0, (double sum, item) => sum + item.price * item.quantity);
+  }
+
   void addItem(String productId, double price, String title) {
     _items.update(
       productId,
@@ -32,6 +36,11 @@ class Cart with ChangeNotifier {
         price: price,
       ),
     );
+    notifyListeners();
+  }
+
+  void removeItem(String productId) {
+    _items.remove(productId);
     notifyListeners();
   }
 }
