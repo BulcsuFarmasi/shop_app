@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/cart_item.dart';
 import '../providers/cart.dart' show Cart;
+import '../providers/orders.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
@@ -11,6 +12,7 @@ class CartScreen extends StatelessWidget {
     final cart = Provider.of<Cart>(context);
     final cartItemKeys = cart.items.keys.toList(growable: false);
     final cartItemValues = cart.items.values.toList(growable: false);
+    final orders = Provider.of<Orders>(context, listen: false);
     return Scaffold(
         appBar: AppBar(
           title: const Text('Your Cart'),
@@ -28,7 +30,7 @@ class CartScreen extends StatelessWidget {
                         'Total',
                         style: TextStyle(fontSize: 20),
                       ),
-                      Spacer(),
+                     Spacer(),
                       Chip(
                         label: Text(
                           '\$${cart.totalAmount}',
@@ -42,7 +44,10 @@ class CartScreen extends StatelessWidget {
                             .of(context)
                             .primaryColor,
                       ),
-                      TextButton(onPressed: () {}, child: Text('ORDER NOW'))
+                      TextButton(onPressed: () {
+                        cart.clear();
+                        orders.addOrder(cartItemValues, cart.totalAmount);
+                      }, child: Text('ORDER NOW'))
                     ],
                   )),
             ),
@@ -51,15 +56,15 @@ class CartScreen extends StatelessWidget {
             ),
             Expanded(
               child: ListView.builder(
-                itemBuilder: (_, int index) {
-                  return CartItem(id: cartItemValues[index].id,
-                      productId: cartItemKeys[index],
-                      title: cartItemValues[index].title,
-                      quantity: cartItemValues[index].quantity,
-                      price: cartItemValues[index].price);
-                },
-                itemCount: cart.itemCount,
-              ),
+                  itemBuilder: (_, int index) {
+                    return CartItem(id: cartItemValues[index].id,
+                        productId: cartItemKeys[index],
+                        title: cartItemValues[index].title,
+                        quantity: cartItemValues[index].quantity,
+                        price: cartItemValues[index].price);
+                  },
+                  itemCount: cart.items.length
+                ),
             ),
           ],
         ));

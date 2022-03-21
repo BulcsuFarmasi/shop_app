@@ -33,7 +33,7 @@ class ProductItem extends StatelessWidget {
             builder: (BuildContext ctx, Product product, _) => IconButton(
               icon: Icon((product.isFavorite) ? Icons.favorite : Icons.favorite_border),
               onPressed: product.toggleFavoriteStatus,
-              color: theme.accentColor,
+              color: theme.colorScheme.secondary,
             ),
           ),
           trailing: IconButton(
@@ -41,7 +41,7 @@ class ProductItem extends StatelessWidget {
             onPressed: () {
               cart.addItem(product.id, product.price, product.title);
             },
-            color: theme.accentColor,
+            color: theme.colorScheme.secondary,
           ),
         ),
       ),

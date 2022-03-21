@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +14,7 @@ class ProductOverviewScreen extends StatefulWidget {
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   bool _showOnlyFavorites = false;
+  static const _cartItemNumberDisplayLimit = 100;
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +37,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
                 }
               });
             },
-            itemBuilder: (_) =>
-            [
+            itemBuilder: (_) => [
               PopupMenuItem(
                 child: const Text('Only Favorites'),
                 value: ProductFilter.onlyFavorites,
@@ -48,11 +49,11 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
             ],
           ),
           Consumer<Cart>(
-            builder: (_, Cart cart, Widget? child) =>
-                Badge(
-                  child: child!,
-                  value: cart.itemCount.toString(),
-                ),
+            builder: (_, Cart cart, Widget? child) => Badge(
+                child: child!,
+                value: (cart.allProductCount <= _cartItemNumberDisplayLimit)
+                    ? cart.allProductCount.toString()
+                    : '${_cartItemNumberDisplayLimit}+'),
             child: IconButton(
               icon: Icon(Icons.shopping_cart),
               onPressed: () {
