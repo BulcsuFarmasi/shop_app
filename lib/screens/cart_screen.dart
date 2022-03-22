@@ -45,8 +45,8 @@ class CartScreen extends StatelessWidget {
                             .primaryColor,
                       ),
                       TextButton(onPressed: () {
-                        cart.clear();
                         orders.addOrder(cartItemValues, cart.totalAmount);
+                        cart.clear();
                       }, child: Text('ORDER NOW'))
                     ],
                   )),

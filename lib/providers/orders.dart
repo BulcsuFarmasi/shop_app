@@ -23,6 +23,7 @@ class Orders with ChangeNotifier {
   }
 
   void addOrder(List<CartItem> cartProducts, double total) {
+
     _items.insert(
         0,
         Order(
