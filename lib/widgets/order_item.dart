@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import '../providers/orders.dart';
 
 class OrderItem extends StatefulWidget {
-  const OrderItem({required Order this.order, Key? key}) : super(key: key);
+  const  OrderItem({required Order this.order, Key? key}) : super(key: key);
 
   final Order order;
 
@@ -45,7 +45,7 @@ class _OrderItemState extends State<OrderItem> {
                       .map((product) => Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                                    Text(
+                              Text(
                                 product.title,
                                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
