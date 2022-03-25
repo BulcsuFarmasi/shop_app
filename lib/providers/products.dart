@@ -17,7 +17,7 @@ class Products with ChangeNotifier {
       description: 'A nice pair of trousers.',
       price: 59.99,
       imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
     ),
     Product(
       id: 'p3',
@@ -41,8 +41,29 @@ class Products with ChangeNotifier {
 
   List<Product> get favoriteItems => items.where((Product product) => product.isFavorite).toList();
 
-  void addProduct() {
-    // _items.add();
+  void addProduct(Product newProduct) {
+    final addedProduct = Product(
+        id: DateTime.now().toString(),
+        title: newProduct.title,
+        description: newProduct.description,
+        imageUrl: newProduct.imageUrl,
+        price: newProduct.price);
+    _items.add(addedProduct);
+    notifyListeners();
+  }
+
+  void updateProduct(Product updateProduct) {
+    final productIndex = _items.indexWhere((Product product) => product.id == updateProduct.id);
+    if (productIndex >= 0) {
+      _items[productIndex] = updateProduct;
+    } else {
+      throw StateError('Product can\'t be found');
+    }
+    notifyListeners();
+  }
+
+  void deleteProduct(String id) {
+    _items.removeWhere((Product product) => product.id == id);
     notifyListeners();
   }
 }
