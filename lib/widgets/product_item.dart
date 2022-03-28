@@ -49,7 +49,7 @@ class ProductItem extends StatelessWidget {
                   action: SnackBarAction(
                     label: 'Undo',
                     onPressed: () {
-                      cart.removeSingleItem(product.id!);
+                      cart.removeQuantityFromItem(product.id!);
                     },
                   ),
                   duration: Duration(seconds: 2),

@@ -23,7 +23,7 @@ class UserProductsScreen extends StatelessWidget {
       ),
       drawer: MainDrawer(),
       body: Padding(
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.all(6),
         child: ListView.builder(
           itemBuilder: (_, int i) => UserProductItem(
             id: products.items[i].id!,

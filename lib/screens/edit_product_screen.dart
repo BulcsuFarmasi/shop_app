@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/products.dart';
 import '../providers/product.dart';
+import '../shared/validators.dart';
 
 class EditProductScreen extends StatefulWidget {
   const EditProductScreen({Key? key}) : super(key: key);
@@ -68,10 +69,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   void _updateImageUrl() {
     final urlLostFocus = !_imageUrlFocusNode.hasFocus;
-    final imageUrl = _imageUrlController.text;
-    final imageUrlIsValid = imageUrl.isNotEmpty &&
-        imageUrl.startsWith('http') &&
-        (imageUrl.endsWith('.jpg') || imageUrl.endsWith('.jpeg') || imageUrl.endsWith('.png'));
+    final imageUrlIsValid = Validators.url(_imageUrlController.text);
     if (urlLostFocus && imageUrlIsValid) {
       setState(() {});
     }
@@ -132,8 +130,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
                 validator: (String? value) {
                   String? errorMessage;
-                  value ??= "";
-                  if (value.isEmpty) {
+                  if (Validators.required(value)) {
                     errorMessage = 'Please provide a value';
                   }
                   return errorMessage;
@@ -153,10 +150,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
                 validator: (String? value) {
                   String? errorMessage;
-                  double? numberValue = double.tryParse(value ?? "");
-                  if (numberValue == null) {
+                  if (Validators.required(value)) {
+                    errorMessage = "Please enter a value";
+                  } else if (Validators.isNumber(value)) {
                     errorMessage = "Please enter a number";
-                  } else if (numberValue <= 0) {
+                  } else if (Validators.minNumber(value, 0)) {
                     errorMessage = "Please enter a number greater than 0.";
                   }
                   return errorMessage;
@@ -173,9 +171,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
                 validator: (String? value) {
                   String? errorMessage;
-                  value ??= "";
-                  if (value.length < 20) {
-                    errorMessage = 'Please write at least 20 characters';
+                  int minLength = 20;
+                  if (Validators.required(value)) {
+                    errorMessage = "Please enter a value";
+                  } else if (Validators.minLength(value, 20)) {
+                    errorMessage = "Please add at least $minLength characters";
                   }
                   return errorMessage;
                 },
@@ -193,29 +193,31 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           : FittedBox(child: Image.network(_imageUrlController.text), fit: BoxFit.contain)),
                   Expanded(
                       child: TextFormField(
-                    decoration: InputDecoration(labelText: 'Image URL'),
-                    keyboardType: TextInputType.url,
-                    textInputAction: TextInputAction.done,
-                    controller: _imageUrlController,
-                    focusNode: _imageUrlFocusNode,
-                    onFieldSubmitted: (_) {
-                      _saveForm();
-                    },
-                    validator: (String? value) {
-                      String? errorMessage;
-                      value ??= "";
-                      if (value.isEmpty) {
-                        errorMessage = 'Please provide a value';
-                      } else if (!value.startsWith('http')) {
-                        errorMessage = 'Please enter a url';
-                      } else if (!value.endsWith('.jpg') && !value.endsWith('.jpeg') && !value.endsWith('.png')) {
-                        errorMessage = 'Please enter an image url';
-                      }
-                      return errorMessage;
-                    },
-                  ))
+                          decoration: InputDecoration(labelText: 'Image URL'),
+                          keyboardType: TextInputType.url,
+                          textInputAction: TextInputAction.done,
+                          controller: _imageUrlController,
+                          focusNode: _imageUrlFocusNode,
+                          validator: (String? value) {
+                            String? errorMessage;
+                            if (Validators.required(value)) {
+                              errorMessage = 'Please enter a value';
+                            } else if (Validators.url(value)) {
+                              errorMessage = 'Please enter a valid url';
+                            }
+
+                            return errorMessage;
+                          }))
                 ],
-              )
+              ),
+              TextButton(
+                  onPressed: () {
+                    _saveForm();
+                  },
+                  child: const Text(
+                    'SEND',
+                    style: TextStyle(),
+                  ))
             ],
           ),
         ),
