@@ -23,24 +23,42 @@ class Cart with ChangeNotifier {
   void addItem(String productId, double price, String title) {
     _items.update(
       productId,
-      (CartItem item) => CartItem(
-        id: item.id,
-        title: item.title,
-        quantity: item.quantity + 1,
-        price: item.price,
-      ),
-      ifAbsent: () => CartItem(
-        id: DateTime.now().toString(),
-        title: title,
-        quantity: 1,
-        price: price,
-      ),
+          (CartItem item) =>
+          CartItem(
+            id: item.id,
+            title: item.title,
+            quantity: item.quantity + 1,
+            price: item.price,
+          ),
+      ifAbsent: () =>
+          CartItem(
+            id: DateTime.now().toString(),
+            title: title,
+            quantity: 1,
+            price: price,
+          ),
     );
     notifyListeners();
   }
 
   void removeItem(String productId) {
     _items.remove(productId);
+    notifyListeners();
+  }
+
+  void removeQuantityFromItem(String productId) {
+    if (!_items.containsKey(productId)) {
+      return;
+    }
+    if (_items[productId]!.quantity > 1) {
+      _items.update(productId, (oldCartItem) =>
+          CartItem(id: oldCartItem.id,
+              title: oldCartItem.title,
+              quantity: oldCartItem.quantity - 1,
+              price: oldCartItem.price));
+    } else {
+      _items.remove(productId);
+    }
     notifyListeners();
   }
 

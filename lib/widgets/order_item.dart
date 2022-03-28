@@ -22,41 +22,40 @@ class _OrderItemState extends State<OrderItem> {
       margin: EdgeInsets.all(10),
       child: Column(
         children: [
-          ListTile(
+          ExpansionTile(
             title: Text('\$${widget.order.amount}'),
             subtitle: Text(
               DateFormat('dd/MM/yyyy hh:mm').format(widget.order.date),
             ),
-            trailing: IconButton(
-              icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
-              onPressed: () {
-                setState(() {
-                  _expanded = !_expanded;
-                });
-              },
-            ),
+            trailing: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
+            onExpansionChanged: (bool expanded) {
+              setState(() {
+                _expanded = expanded;
+              });
+            },
+            children: [
+              Container(
+                height: min(widget.order.products.length * 20 + 10, 100),
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+                child: ListView(
+                    children: widget.order.products
+                        .map((product) => Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  product.title,
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  '${product.quantity} x \$${product.price}',
+                                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                                )
+                              ],
+                            ))
+                        .toList()),
+              )
+            ],
           ),
-          if (_expanded)
-            Container(
-              height: min(widget.order.products.length * 20 + 10, 100),
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-              child: ListView(
-                   children: widget.order.products
-                      .map((product) => Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                                    Text(
-                                product.title,
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                '${product.quantity} x \$${product.price}',
-                                style: TextStyle(fontSize: 18, color: Colors.grey),
-                              )
-                            ],
-                          ))
-                      .toList()),
-            )
         ],
       ),
     );

@@ -52,7 +52,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
           Consumer<Cart>(
             builder: (_, Cart cart, Widget? child) => Badge(
                 child: child!,
-                value: (cart.allProductCount <= _cartItemNumberDisplayLimit)
+                value: (cart. allProductCount <= _cartItemNumberDisplayLimit)
                     ? cart.allProductCount.toString()
                     : '${_cartItemNumberDisplayLimit}+'),
             child: IconButton(
