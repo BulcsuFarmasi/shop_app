@@ -44,12 +44,13 @@ class Products with ChangeNotifier {
 
   List<Product> get favoriteItems => items.where((Product product) => product.isFavorite).toList();
 
-  Future<void> addProduct(Product newProduct) {
+  Future<void> addProduct(Product newProduct) async {
     final url = Uri.parse('${Api.baseUrl}/${Api.getEndpoint(Endpoint.products)}');
-    return http
-        .post(url,
-            body: json.encode(newProduct))
-        .then((response) {
+    try {
+      final response = await http
+          .post(url,
+          body: json.encode(newProduct));
+
       final addedProduct = Product(
           id: json.decode(response.body)['name'],
           title: newProduct.title,
@@ -58,9 +59,9 @@ class Products with ChangeNotifier {
           price: newProduct.price);
       _items.add(addedProduct);
       notifyListeners();
-    }).catchError((error) {
+    } catch (error) {
       throw error;
-    });
+    }
   }
 
   void updateProduct(Product updateProduct) {

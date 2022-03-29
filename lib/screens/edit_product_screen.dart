@@ -76,7 +76,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     final isValid = _form.currentState?.validate() ?? false;
     if (!isValid) {
       return;
@@ -95,24 +95,28 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
     switch (editingMode) {
       case EditingMode.add:
-        products.addProduct(saveProduct).catchError((error) {
-          return showDialog<Null>(
+        try {
+          await products.addProduct(saveProduct);
+        } catch (error) {
+          await showDialog<Null>(
               context: context,
               builder: (ctx) => AlertDialog(
                     title: Text('An error occured'),
                     content: Text('Something went wrong'),
                     actions: [
-                      TextButton(onPressed: () {
-                        Navigator.of(ctx).pop();
-                      }, child: Text('Okay'))
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pop();
+                          },
+                          child: Text('Okay'))
                     ],
                   ));
-        }).then((_) {
+        } finally {
           Navigator.of(context).pop();
           setState(() {
             _isLoading = false;
           });
-        });
+        }
         break;
       case EditingMode.edit:
         products.updateProduct(saveProduct);
