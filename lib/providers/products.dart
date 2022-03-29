@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import '../shared/api.dart';
 
 import 'product.dart';
 
@@ -17,7 +20,7 @@ class Products with ChangeNotifier {
       description: 'A nice pair of trousers.',
       price: 59.99,
       imageUrl:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
     ),
     Product(
       id: 'p3',
@@ -41,15 +44,23 @@ class Products with ChangeNotifier {
 
   List<Product> get favoriteItems => items.where((Product product) => product.isFavorite).toList();
 
-  void addProduct(Product newProduct) {
-    final addedProduct = Product(
-        id: DateTime.now().toString(),
-        title: newProduct.title,
-        description: newProduct.description,
-        imageUrl: newProduct.imageUrl,
-        price: newProduct.price);
-    _items.add(addedProduct);
-    notifyListeners();
+  Future<void> addProduct(Product newProduct) {
+    final url = Uri.parse('${Api.baseUrl}/${Api.getEndpoint(Endpoint.products)}');
+    return http
+        .post(url,
+            body: json.encode(newProduct))
+        .then((response) {
+      final addedProduct = Product(
+          id: json.decode(response.body)['name'],
+          title: newProduct.title,
+          description: newProduct.description,
+          imageUrl: newProduct.imageUrl,
+          price: newProduct.price);
+      _items.add(addedProduct);
+      notifyListeners();
+    }).catchError((error) {
+      throw error;
+    });
   }
 
   void updateProduct(Product updateProduct) {
