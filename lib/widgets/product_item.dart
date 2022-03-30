@@ -9,6 +9,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
     return ClipRRect(
@@ -30,11 +31,18 @@ class ProductItem extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           leading: Consumer<Product>(
-            builder: (BuildContext ctx, Product product, _) => IconButton(
-              icon: Icon((product.isFavorite) ? Icons.favorite : Icons.favorite_border),
-              onPressed: product.toggleFavoriteStatus,
-              color: theme.colorScheme.secondary,
-            ),
+            builder: (BuildContext ctx, Product product, _) =>
+                IconButton(
+                  icon: Icon((product.isFavorite) ? Icons.favorite : Icons.favorite_border),
+                  onPressed: () async {
+                    try {
+                      await product.toggleFavoriteStatus();
+                    } catch (e) {
+                      scaffoldMessenger.showSnackBar(SnackBar(content: Text('Failed to make favorite')));
+                    }
+                  },
+                  color: theme.colorScheme.secondary,
+                ),
           ),
           trailing: IconButton(
             icon: Icon(Icons.shopping_cart),

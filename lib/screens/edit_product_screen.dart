@@ -32,6 +32,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   EditingMode editingMode = EditingMode.add;
 
   bool _isInit = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -75,12 +76,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     final isValid = _form.currentState?.validate() ?? false;
     if (!isValid) {
       return;
     }
     _form.currentState?.save();
+    setState(() {
+      _isLoading = true;
+    });
     final products = Provider.of<Products>(context, listen: false);
     Product saveProduct = Product(
       id: productId,
@@ -88,16 +92,36 @@ class _EditProductScreenState extends State<EditProductScreen> {
       description: description,
       imageUrl: _imageUrlController.text,
       price: double.parse(price),
+      isFavorite: isFavorite,
     );
     switch (editingMode) {
       case EditingMode.add:
-        products.addProduct(saveProduct);
+        try {
+          await products.addProduct(saveProduct);
+        } catch (error) {
+          await showDialog<Null>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                    title: Text('An error occured'),
+                    content: Text('Something went wrong'),
+                    actions: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pop();
+                          },
+                          child: Text('Okay'))
+                    ],
+                  ));
+        }
         break;
       case EditingMode.edit:
-        products.updateProduct(saveProduct);
+        await products.updateProduct(saveProduct);
         break;
     }
     Navigator.of(context).pop();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -112,116 +136,120 @@ class _EditProductScreenState extends State<EditProductScreen> {
           )
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _form,
-          child: ListView(
-            children: [
-              TextFormField(
-                initialValue: title,
-                decoration: InputDecoration(label: Text('Title')),
-                textInputAction: TextInputAction.next,
-                onFieldSubmitted: (_) {
-                  FocusScope.of(context).requestFocus(_priceFocusNode);
-                },
-                onSaved: (value) {
-                  title = value ?? "";
-                },
-                validator: (String? value) {
-                  String? errorMessage;
-                  if (Validators.required(value)) {
-                    errorMessage = 'Please provide a value';
-                  }
-                  return errorMessage;
-                },
-              ),
-              TextFormField(
-                initialValue: price,
-                decoration: InputDecoration(labelText: 'Price'),
-                textInputAction: TextInputAction.next,
-                keyboardType: TextInputType.number,
-                focusNode: _priceFocusNode,
-                onFieldSubmitted: (_) {
-                  FocusScope.of(context).requestFocus(_descriptionFocusNode);
-                },
-                onSaved: (value) {
-                  price = value ?? "";
-                },
-                validator: (String? value) {
-                  String? errorMessage;
-                  if (Validators.required(value)) {
-                    errorMessage = "Please enter a value";
-                  } else if (Validators.isNumber(value)) {
-                    errorMessage = "Please enter a number";
-                  } else if (Validators.minNumber(value, 0)) {
-                    errorMessage = "Please enter a number greater than 0.";
-                  }
-                  return errorMessage;
-                },
-              ),
-              TextFormField(
-                initialValue: description,
-                decoration: InputDecoration(labelText: 'Description'),
-                maxLines: 3,
-                keyboardType: TextInputType.multiline,
-                focusNode: _descriptionFocusNode,
-                onSaved: (value) {
-                  description = value ?? "";
-                },
-                validator: (String? value) {
-                  String? errorMessage;
-                  int minLength = 20;
-                  if (Validators.required(value)) {
-                    errorMessage = "Please enter a value";
-                  } else if (Validators.minLength(value, 20)) {
-                    errorMessage = "Please add at least $minLength characters";
-                  }
-                  return errorMessage;
-                },
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Container(
-                      height: 100,
-                      width: 100,
-                      margin: EdgeInsets.only(top: 8, right: 10),
-                      decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
-                      child: _imageUrlController.text.isEmpty
-                          ? Text('Enter a URL')
-                          : FittedBox(child: Image.network(_imageUrlController.text), fit: BoxFit.contain)),
-                  Expanded(
-                      child: TextFormField(
-                          decoration: InputDecoration(labelText: 'Image URL'),
-                          keyboardType: TextInputType.url,
-                          textInputAction: TextInputAction.done,
-                          controller: _imageUrlController,
-                          focusNode: _imageUrlFocusNode,
-                          validator: (String? value) {
-                            String? errorMessage;
-                            if (Validators.required(value)) {
-                              errorMessage = 'Please enter a value';
-                            } else if (Validators.url(value)) {
-                              errorMessage = 'Please enter a valid url';
-                            }
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _form,
+                child: ListView(
+                  children: [
+                    TextFormField(
+                      initialValue: title,
+                      decoration: InputDecoration(label: Text('Title')),
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(_priceFocusNode);
+                      },
+                      onSaved: (value) {
+                        title = value ?? "";
+                      },
+                      validator: (String? value) {
+                        String? errorMessage;
+                        if (Validators.required(value)) {
+                          errorMessage = 'Please provide a value';
+                        }
+                        return errorMessage;
+                      },
+                    ),
+                    TextFormField(
+                      initialValue: price,
+                      decoration: InputDecoration(labelText: 'Price'),
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.number,
+                      focusNode: _priceFocusNode,
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(_descriptionFocusNode);
+                      },
+                      onSaved: (value) {
+                        price = value ?? "";
+                      },
+                      validator: (String? value) {
+                        String? errorMessage;
+                        if (Validators.required(value)) {
+                          errorMessage = "Please enter a value";
+                        } else if (Validators.isNumber(value)) {
+                          errorMessage = "Please enter a number";
+                        } else if (Validators.minNumber(value, 0)) {
+                          errorMessage = "Please enter a number greater than 0.";
+                        }
+                        return errorMessage;
+                      },
+                    ),
+                    TextFormField(
+                      initialValue: description,
+                      decoration: InputDecoration(labelText: 'Description'),
+                      maxLines: 3,
+                      keyboardType: TextInputType.multiline,
+                      focusNode: _descriptionFocusNode,
+                      onSaved: (value) {
+                        description = value ?? "";
+                      },
+                      validator: (String? value) {
+                        String? errorMessage;
+                        int minLength = 20;
+                        if (Validators.required(value)) {
+                          errorMessage = "Please enter a value";
+                        } else if (Validators.minLength(value, 20)) {
+                          errorMessage = "Please add at least $minLength characters";
+                        }
+                        return errorMessage;
+                      },
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
+                            height: 100,
+                            width: 100,
+                            margin: EdgeInsets.only(top: 8, right: 10),
+                            decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
+                            child: _imageUrlController.text.isEmpty
+                                ? Text('Enter a URL')
+                                : FittedBox(child: Image.network(_imageUrlController.text), fit: BoxFit.contain)),
+                        Expanded(
+                            child: TextFormField(
+                                decoration: InputDecoration(labelText: 'Image URL'),
+                                keyboardType: TextInputType.url,
+                                textInputAction: TextInputAction.done,
+                                controller: _imageUrlController,
+                                focusNode: _imageUrlFocusNode,
+                                validator: (String? value) {
+                                  String? errorMessage;
+                                  if (Validators.required(value)) {
+                                    errorMessage = 'Please enter a value';
+                                  } else if (Validators.url(value)) {
+                                    errorMessage = 'Please enter a valid url';
+                                  }
 
-                            return errorMessage;
-                          }))
-                ],
+                                  return errorMessage;
+                                }))
+                      ],
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          _saveForm();
+                        },
+                        child: const Text(
+                          'SEND',
+                          style: TextStyle(),
+                        ))
+                  ],
+                ),
               ),
-              TextButton(
-                  onPressed: () {
-                    _saveForm();
-                  },
-                  child: const Text(
-                    'SEND',
-                    style: TextStyle(),
-                  ))
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
