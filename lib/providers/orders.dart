@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
-import './cart.dart';
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
+import './cart.dart';
 import '../shared/api.dart';
 
 class Order {
@@ -35,7 +37,7 @@ class Orders with ChangeNotifier {
             {
               'amount': total,
               'products': cartProducts,
-              'date': currentDate.toString(),
+              'date': currentDate.toIso8601String(),
             },
           ));
       String orderId = json.decode(response.body)['name'];
@@ -49,7 +51,10 @@ class Orders with ChangeNotifier {
     final url = Uri.parse('${Api.baseUrl}/${Api.getEndpoint(Endpoint.orders)}.json');
     final response = await http.get(url);
     try {
-      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final extractedData = json.decode(response.body) as Map<String, dynamic>?;
+      if (extractedData == null) {
+        return;
+      }
       final List<Order> loadedOrders = [];
       extractedData.forEach((id, order) {
         final List<CartItem> products = [];
@@ -61,6 +66,8 @@ class Orders with ChangeNotifier {
                 price: product['price'],
               ))
             });
+
+
         loadedOrders.add(Order(
           id: id,
           amount: order['amount'],
@@ -68,8 +75,7 @@ class Orders with ChangeNotifier {
           date: DateTime.parse(order['date']),
         ));
       });
-      _items = loadedOrders;
-      print(_items);
+      _items = loadedOrders.reversed.toList();
       notifyListeners();
     } catch (e) {
       throw e;

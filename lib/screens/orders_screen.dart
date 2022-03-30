@@ -13,50 +13,50 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
-  late Orders orders;
-  bool _isInitilized = false;
-  bool _isLoading = false;
+  Future? _ordersFuture;
+
+  Future _getOrdersFuture() {
+    return Provider.of<Orders>(context, listen: false).fetchOrders();
+  }
 
   @override
-  void didChangeDependencies() {
-    if (!_isInitilized) {
-      setState(() {
-        _isLoading = true;
-      });
-      orders = Provider.of<Orders>(context);
-
-      orders.fetchOrders().catchError((_) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Couldn\'t load Orders'),
-        ));
-      }).whenComplete(() => setState(() {
-            _isLoading = false;
-          }));
-    }
-    _isInitilized = true;
-
-    super.didChangeDependencies();
+  void initState() {
+    _ordersFuture = _getOrdersFuture();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Your Orders'),
-        ),
-        drawer: MainDrawer(),
-        body: (_isLoading)
-            ? Container(
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(),
-              )
-            : ListView.builder(
-                itemBuilder: (BuildContext ctx, int index) {
-                  return OrderItem(
-                    order: orders.items[index],
-                  );
-                },
-                itemCount: orders.items.length,
-              ));
+      appBar: AppBar(
+        title: Text('Your Orders'),
+      ),
+      drawer: MainDrawer(),
+      body: FutureBuilder(
+        future: _ordersFuture,
+        builder: (BuildContext ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container(
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            if (snapshot.hasError) {
+              return Center(child: Text('Ann error occured'));
+            } else {
+              return Consumer<Orders>(builder: (ctx, orders, child) {
+                return ListView.builder(
+                    itemBuilder: (BuildContext ctx, int index) {
+                      return OrderItem(
+                        order: orders.items[index],
+                      );
+                    },
+                    itemCount: orders.items.length);
+              });
+            }
+          }
+        },
+      ),
+    );
   }
 }

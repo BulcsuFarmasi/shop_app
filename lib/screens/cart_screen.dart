@@ -1,28 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/providers/cart.dart' show Cart;
 import '../widgets/cart_item.dart';
-import '../providers/cart.dart' show Cart;
 import '../providers/orders.dart';
 
-class CartScreen extends StatefulWidget {
+class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
-
-  @override
-  State<CartScreen> createState() => _CartScreenState();
-}
-
-class _CartScreenState extends State<CartScreen> {
-  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
-    final orders = Provider.of<Orders>(context);
     final productIds = cart.items.keys.toList(growable: false);
     final cartItems = cart.items.values.toList(growable: false);
 
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
     return Scaffold(
         appBar: AppBar(
           title: const Text('Your Cart'),
@@ -48,31 +39,9 @@ class _CartScreenState extends State<CartScreen> {
                         ),
                         backgroundColor: Theme.of(context).primaryColor,
                       ),
-                      if (_isLoading)
-                        Padding(
-                          padding: EdgeInsets.all(10),
-                          child: CircularProgressIndicator(),
-                        ),
-                      if (!_isLoading)
-                        TextButton(
-                            onPressed: (cart.totalAmount > 0 && cartItems.isNotEmpty)
-                                ? () async {
-                                    setState(() {
-                                      _isLoading = true;
-                                    });
-                                    try {
-                                      await orders.addOrder(cartItems, cart.totalAmount);
-                                      cart.clear();
-                                    } catch (e) {
-                                      scaffoldMessenger.showSnackBar(SnackBar(content: Text('Couldn\'t place order')));
-                                    } finally {
-                                      setState(() {
-                                        _isLoading = false;
-                                      });
-                                    }
-                                  }
-                                : null,
-                            child: Text('ORDER NOW'))
+                      OrderButton(
+                        cart: cart,
+                      )
                     ],
                   )),
             ),
@@ -93,5 +62,46 @@ class _CartScreenState extends State<CartScreen> {
             ),
           ],
         ));
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    Key? key,
+    required this.cart,
+  }) : super(key: key);
+
+  final Cart cart;
+
+  @override
+  State<OrderButton> createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  bool _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final orders = Provider.of<Orders>(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    return TextButton(
+        onPressed: ((widget.cart.totalAmount > 0 && widget.cart.items.values.isNotEmpty) && !_isLoading)
+            ? () async {
+                setState(() {
+                  _isLoading = true;
+                });
+                try {
+                  await orders.addOrder(widget.cart.items.values.toList(), widget.cart.totalAmount);
+                  widget.cart.clear();
+                } catch (e) {
+                  scaffoldMessenger.showSnackBar(SnackBar(content: Text('Couldn\'t place order')));
+                } finally {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                }
+              }
+            : null,
+        child: (_isLoading) ? CircularProgressIndicator() : Text('ORDER NOW'));
   }
 }

@@ -19,7 +19,10 @@ class Products with ChangeNotifier {
   Future<void> fetchProducts() async {
     final url = Uri.parse('${Api.baseUrl}/${Api.getEndpoint(Endpoint.products)}.json');
     final response = await http.get(url);
-    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    final extractedData = json.decode(response.body) as Map<String, dynamic>?;
+    if (extractedData == null) {
+      return;
+    }
     final List<Product> loadedProducts = [];
     extractedData.forEach((String id, dynamic product) {
       loadedProducts.add(Product(
