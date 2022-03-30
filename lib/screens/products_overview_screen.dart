@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shop_app/widgets/main_drawer.dart';
 
 import '../providers/cart.dart';
+import '../providers/products.dart';
 import '../screens/cart_screen.dart';
 import '../widgets/products_grid.dart';
 import '../widgets/badge.dart';
@@ -15,7 +16,23 @@ class ProductOverviewScreen extends StatefulWidget {
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   bool _showOnlyFavorites = false;
+  bool _isInit = true;
+  bool _isLoading = false;
   static const _cartItemNumberDisplayLimit = 100;
+
+  @override
+  void didChangeDependencies() {
+    setState(() {
+      if (_isInit) {
+        _isLoading = true;
+        Provider.of<Products>(context).fetchProducts().then((_) {
+          _isLoading = false;
+        });
+        _isInit = false;
+      }
+    });
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +69,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
           Consumer<Cart>(
             builder: (_, Cart cart, Widget? child) => Badge(
                 child: child!,
-                value: (cart. allProductCount <= _cartItemNumberDisplayLimit)
+                value: (cart.allProductCount <= _cartItemNumberDisplayLimit)
                     ? cart.allProductCount.toString()
                     : '${_cartItemNumberDisplayLimit}+'),
             child: IconButton(
@@ -65,7 +82,11 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
         ],
       ),
       drawer: MainDrawer(),
-      body: ProductsGrid(_showOnlyFavorites),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ProductsGrid(_showOnlyFavorites),
     );
   }
 }

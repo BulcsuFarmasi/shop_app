@@ -5,10 +5,11 @@ class Api {
 
   static Map<Endpoint, String> _endPoints = {
     Endpoint.products: 'products',
+    Endpoint.orders: 'orders',
   };
 
   static String getEndpoint(Endpoint endpoint) => _endPoints[endpoint] ?? "";
 }
 
-enum Endpoint { products }
+enum Endpoint { products, orders }
 

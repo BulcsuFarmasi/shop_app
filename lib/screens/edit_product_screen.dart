@@ -92,6 +92,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       description: description,
       imageUrl: _imageUrlController.text,
       price: double.parse(price),
+      isFavorite: isFavorite,
     );
     switch (editingMode) {
       case EditingMode.add:
@@ -111,21 +112,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           child: Text('Okay'))
                     ],
                   ));
-        } finally {
-          Navigator.of(context).pop();
-          setState(() {
-            _isLoading = false;
-          });
         }
         break;
       case EditingMode.edit:
-        products.updateProduct(saveProduct);
-        Navigator.of(context).pop();
-        setState(() {
-          _isLoading = false;
-        });
+        await products.updateProduct(saveProduct);
         break;
     }
+    Navigator.of(context).pop();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
