@@ -7,6 +7,7 @@ class Api {
   static Map<DbEndpoint, String> _dbEndPoints = {
     DbEndpoint.products: 'products',
     DbEndpoint.orders: 'orders',
+    DbEndpoint.userFavorites: 'userFavorites',
   };
 
   static Map<AuthEndpoint, String> _authEndPoints = {
@@ -20,5 +21,5 @@ class Api {
   static String getAuthEndpoint(AuthEndpoint endpoint) => _authEndPoints[endpoint] ?? "";
 }
 
-enum DbEndpoint { products, orders }
+enum DbEndpoint { products, orders, userFavorites }
 enum AuthEndpoint { signUp, signIn }

@@ -27,8 +27,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   //other properties of product
   String? productId = "";
-  bool isFavorite = false;
-
   EditingMode editingMode = EditingMode.add;
 
   bool _isInit = true;
@@ -61,7 +59,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
         description = editedProduct.description;
         price = editedProduct.price.toString();
         _imageUrlController.text = editedProduct.imageUrl;
-        isFavorite = editedProduct.isFavorite;
       }
     }
     _isInit = false;
@@ -92,7 +89,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
       description: description,
       imageUrl: _imageUrlController.text,
       price: double.parse(price),
-      isFavorite: isFavorite,
     );
     switch (editingMode) {
       case EditingMode.add:
