@@ -1,15 +1,24 @@
-
+import 'package:flutter/cupertino.dart';
 
 class Api {
-  static const String baseUrl = 'https://shop-app-c7564-default-rtdb.europe-west1.firebasedatabase.app';
+  static const String dbUrl = 'https://shop-app-c7564-default-rtdb.europe-west1.firebasedatabase.app';
+  static const String authUrl = 'https://identitytoolkit.googleapis.com/v1/accounts';
 
-  static Map<Endpoint, String> _endPoints = {
-    Endpoint.products: 'products',
-    Endpoint.orders: 'orders',
+  static Map<DbEndpoint, String> _dbEndPoints = {
+    DbEndpoint.products: 'products',
+    DbEndpoint.orders: 'orders',
   };
 
-  static String getEndpoint(Endpoint endpoint) => _endPoints[endpoint] ?? "";
+  static Map<AuthEndpoint, String> _authEndPoints = {
+    AuthEndpoint.signUp: 'signUp',
+    AuthEndpoint.signIn: 'signInWithPassword',
+  };
+
+
+  static String getDbEndpoint(DbEndpoint endpoint) => _dbEndPoints[endpoint] ?? "";
+
+  static String getAuthEndpoint(AuthEndpoint endpoint) => _authEndPoints[endpoint] ?? "";
 }
 
-enum Endpoint { products, orders }
-
+enum DbEndpoint { products, orders }
+enum AuthEndpoint { signUp, signIn }

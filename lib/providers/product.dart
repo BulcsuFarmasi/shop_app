@@ -29,7 +29,7 @@ class Product with ChangeNotifier {
   Future<void> toggleFavoriteStatus() async {
     final oldStatus = isFavorite;
     _setFavorite(!isFavorite);
-    final url = Uri.parse('${Api.baseUrl}/${Api.getEndpoint(Endpoint.products)}/$id.json');
+    final url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.products)}/$id.json');
     final response = await http.patch(url, body: json.encode(this));
     if (response.statusCode > 400) {
       _setFavorite(oldStatus);

@@ -16,7 +16,7 @@ class Validators {
   }
 
   static bool minNumber(String? value, int min) {
-      return value != null && num.parse(value) <= min;
+    return value != null && num.parse(value) <= min;
   }
 
   static bool pattern(String? value, RegExp pattern) {
@@ -24,7 +24,11 @@ class Validators {
   }
 
   static bool url(String? value) {
-    return value != null && !pattern(value, RegExp(
-    r'(https?|ftp)://([-A-Z0-9.]+)(/[-A-Z0-9+&@#/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#/%=~_|!:,.;]*)?'));
+    return pattern(
+            value, RegExp(r'(https?|ftp)://([-A-Z0-9.]+)(/[-A-Z0-9+&@#/%=~_|!:,.;]*)?(\?[A-Z0-9+&@#/%=~_|!:,.;]*)?'));
+  }
+
+  static bool email(String? value) {
+    return pattern(value, RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+"));
   }
 }

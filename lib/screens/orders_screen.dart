@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/main_drawer.dart';
@@ -42,7 +41,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             );
           } else {
             if (snapshot.hasError) {
-              return Center(child: Text('Ann error occured'));
+              return Center(child: Text('An error occured'));
             } else {
               return Consumer<Orders>(builder: (ctx, orders, child) {
                 return ListView.builder(

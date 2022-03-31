@@ -29,7 +29,7 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     notifyListeners();
-    final url = Uri.parse('${Api.baseUrl}/${Api.getEndpoint(Endpoint.orders)}.json');
+    final url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.orders)}.json');
     final currentDate = DateTime.now();
     try {
       final response = await http.post(url,
@@ -48,7 +48,7 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchOrders() async {
-    final url = Uri.parse('${Api.baseUrl}/${Api.getEndpoint(Endpoint.orders)}.json');
+    final url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.orders)}.json');
     final response = await http.get(url);
     try {
       final extractedData = json.decode(response.body) as Map<String, dynamic>?;
