@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/screens/products_overview_screen.dart';
+import 'package:shop_app/widgets/splash_screen.dart';
 
 import './providers/cart.dart';
 import './providers/orders.dart';
@@ -23,9 +24,9 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(create: (BuildContext ctx) => Auth()),
           ChangeNotifierProxyProvider<Auth, Products>(
-              create: (BuildContext ctx) => Products('', '', []),
+              create: (BuildContext ctx) => Products('', ''),
               update: (BuildContext ctx, Auth auth, previousProducts) =>
-                  Products(auth.token, auth.userId, previousProducts?.items ?? [])),
+                  (previousProducts ?? Products('', ''))..updateUser(auth.token, auth.userId)),
           ChangeNotifierProvider(create: (BuildContext ctx) => Cart()),
           ChangeNotifierProxyProvider<Auth, Orders>(
               create: (BuildContext ctx) => Orders('', '', []),
@@ -40,7 +41,13 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSwatch(primarySwatch: AppColors.primaryColor)
                   .copyWith(secondary: AppColors.secondaryColor),
             ),
-            home: auth.isAuth ? ProductOverviewScreen() : AuthScreen(),
+            home: auth.isAuth
+                ? ProductOverviewScreen()
+                : FutureBuilder(
+                    future: auth.tryAutoLogIn(),
+                    builder: (BuildContext ctx, AsyncSnapshot snapshot) =>
+                        snapshot.connectionState == ConnectionState.waiting ? SplashScreen() : AuthScreen(),
+                  ),
             routes: {
               ProductDetailScreen.routeName: (BuildContext context) => ProductDetailScreen(),
               CartScreen.routeName: (BuildContext context) => CartScreen(),

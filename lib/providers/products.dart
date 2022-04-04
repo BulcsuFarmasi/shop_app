@@ -8,10 +8,10 @@ import '../shared/api.dart';
 import 'product.dart';
 
 class Products with ChangeNotifier {
-  Products(this.authToken, this.userId, this._items);
+  Products(this.authToken, this.userId);
 
-  final String? authToken;
-  final String? userId;
+  String? authToken;
+  String? userId;
 
   List<Product> _items = [];
 
@@ -20,6 +20,8 @@ class Products with ChangeNotifier {
   List<Product> get items => [..._items];
 
   List<Product> get favoriteItems => items.where((Product product) => product.isFavorite).toList();
+
+
 
   Future<void> fetchProducts([bool filterByUser = false]) async {
     final filterString = filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : "";
@@ -72,7 +74,6 @@ class Products with ChangeNotifier {
   }
 
   Future<void> updateProduct(Product updateProduct) async {
-    print(updateProduct.isFavorite);
     final productIndex = _items.indexWhere((Product product) => product.id == updateProduct.id);
     if (productIndex >= 0) {
       final url =
@@ -104,5 +105,10 @@ class Products with ChangeNotifier {
       throw HttpException('Could not delete program');
     }
     existingProduct = null;
+  }
+
+  void updateUser(String? newToken, String? newUserId) {
+    authToken = newToken;
+    userId = newUserId;
   }
 }

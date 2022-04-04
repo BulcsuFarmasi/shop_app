@@ -126,8 +126,8 @@ class _AuthCardState extends State<AuthCard> {
     });
     try {
       if (_authMode == AuthMode.Login) {
-        await Provider.of<Auth>(context, listen: false).signIn(_authData['email']!, _authData['password']!);
         // Log user in
+        await Provider.of<Auth>(context, listen: false).signIn(_authData['email']!, _authData['password']!);
       } else {
         // Sign user up
         await Provider.of<Auth>(context, listen: false).signUp(_authData['email']!, _authData['password']!);
@@ -144,10 +144,14 @@ class _AuthCardState extends State<AuthCard> {
         errorMessage = 'Could not find a user with that email';
       }
       _showErrorDialog(errorMessage);
+      setState(() {
+        _isLoading = false;
+      });
     } catch (e) {
       const errorMessage = 'Could not authenticate you, please try again later.';
       _showErrorDialog(errorMessage);
     }
+    if (!mounted) return;
     setState(() {
       _isLoading = false;
     });
