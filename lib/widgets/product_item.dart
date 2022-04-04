@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/auth.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
 import '../screens/product_detail_screen.dart';
@@ -12,6 +13,7 @@ class ProductItem extends StatelessWidget {
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
+    final auth = Provider.of<Auth>(context, listen: false);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.0),
       child: GridTile(
@@ -36,7 +38,7 @@ class ProductItem extends StatelessWidget {
                   icon: Icon((product.isFavorite) ? Icons.favorite : Icons.favorite_border),
                   onPressed: () async {
                     try {
-                      await product.toggleFavoriteStatus();
+                      await product.toggleFavoriteStatus(auth.token!, auth.userId!);
                     } catch (e) {
                       scaffoldMessenger.showSnackBar(SnackBar(content: Text('Failed to make favorite')));
                     }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/auth.dart';
 import '../screens/orders_screen.dart';
 import '../screens/user_products_screen.dart';
 
@@ -27,24 +29,57 @@ class MainDrawer extends StatelessWidget {
             padding: EdgeInsets.only(top: mediaQuery.padding.top),
           ),
           ListTile(
-            leading: Icon(Icons.store, size: 20,),
-            title: Text('Shop', style: TextStyle(fontSize: 20), ),
+            leading: Icon(
+              Icons.store,
+              size: 20,
+            ),
+            title: Text(
+              'Shop',
+              style: TextStyle(fontSize: 20),
+            ),
             onTap: () {
               navigator.pushReplacementNamed('/');
             },
           ),
           ListTile(
-            leading: Icon(Icons.store, size: 20,),
-            title: Text('Orders', style: TextStyle(fontSize: 20), ),
+            leading: Icon(
+              Icons.store,
+              size: 20,
+            ),
+            title: Text(
+              'Orders',
+              style: TextStyle(fontSize: 20),
+            ),
             onTap: () {
               navigator.pushReplacementNamed(OrdersScreen.routeName);
             },
           ),
           ListTile(
-            leading: Icon(Icons.edit, size: 20,),
-            title: Text('Manage Products', style: TextStyle(fontSize: 20), ),
+            leading: Icon(
+              Icons.edit,
+              size: 20,
+            ),
+            title: Text(
+              'Manage Products',
+              style: TextStyle(fontSize: 20),
+            ),
             onTap: () {
               navigator.pushReplacementNamed(UserProductsScreen.routeName);
+            },
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.exit_to_app,
+              size: 20,
+            ),
+            title: Text(
+              'Logout',
+              style: TextStyle(fontSize: 20),
+            ),
+            onTap: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pushReplacementNamed('/');
+              Provider.of<Auth>(context, listen: false).logOut();
             },
           ),
         ],

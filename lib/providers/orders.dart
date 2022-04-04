@@ -21,7 +21,13 @@ class Order {
 }
 
 class Orders with ChangeNotifier {
+  Orders(this.authToken, this.userId, this._items);
+
   List<Order> _items = [];
+
+  final String? authToken;
+  final String? userId;
+
 
   List<Order> get items {
     return [..._items];
@@ -29,7 +35,7 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     notifyListeners();
-    final url = Uri.parse('${Api.baseUrl}/${Api.getEndpoint(Endpoint.orders)}.json');
+    final url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.orders)}/$userId/.json?auth=$authToken');
     final currentDate = DateTime.now();
     try {
       final response = await http.post(url,
@@ -48,7 +54,7 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchOrders() async {
-    final url = Uri.parse('${Api.baseUrl}/${Api.getEndpoint(Endpoint.orders)}.json');
+    final url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.orders)}/$userId/.json?auth=$authToken');
     final response = await http.get(url);
     try {
       final extractedData = json.decode(response.body) as Map<String, dynamic>?;
