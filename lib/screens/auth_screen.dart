@@ -196,11 +196,11 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
         borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 8.0,
-      child: Container(
+      child: AnimatedBuilder(animation: _heightAnimation!, builder: (BuildContext ctx, Widget? child) => Container(
         height: _heightAnimation!.value.height,
         constraints: BoxConstraints(minHeight: _heightAnimation!.value.height),
         width: deviceSize.width * 0.75,
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0), child: child),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -242,10 +242,10 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
                     obscureText: true,
                     validator: _authMode == AuthMode.Signup
                         ? (value) {
-                            if (value != _passwordController.text) {
-                              return 'Passwords do not match!';
-                            }
-                          }
+                      if (value != _passwordController.text) {
+                        return 'Passwords do not match!';
+                      }
+                    }
                         : null,
                   ),
                 SizedBox(
@@ -277,8 +277,7 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
               ],
             ),
           ),
-        ),
-      ),
-    );
+        ))
+      );
   }
 }
