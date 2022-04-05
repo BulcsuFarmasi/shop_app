@@ -67,9 +67,8 @@ class CartScreen extends StatelessWidget {
 
 class OrderButton extends StatefulWidget {
   const OrderButton({
-    Key? key,
     required this.cart,
-  }) : super(key: key);
+  });
 
   final Cart cart;
 

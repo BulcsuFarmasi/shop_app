@@ -5,7 +5,6 @@ import '../providers/product.dart';
 import '../shared/validators.dart';
 
 class EditProductScreen extends StatefulWidget {
-  const EditProductScreen({Key? key}) : super(key: key);
 
   static const String routeName = '/edit-product';
 
@@ -26,7 +25,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   String description = "";
 
   //other properties of product
-  String? productId = "";
+  String? productId;
   EditingMode editingMode = EditingMode.add;
 
   bool _isInit = true;
@@ -51,7 +50,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   void didChangeDependencies() {
     if (_isInit) {
-      productId = ModalRoute.of(context)?.settings.arguments as String?;
+      productId = ModalRoute.of(context)?.settings.arguments as String;
       if (productId != null) {
         editingMode = EditingMode.edit;
         Product editedProduct = Provider.of<Products>(context, listen: false).findById(productId!);
@@ -74,11 +73,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   Future<void> _saveForm() async {
-    final isValid = _form.currentState?.validate() ?? false;
+    final isValid = _form.currentState!.validate();
     if (!isValid) {
       return;
     }
-    _form.currentState?.save();
+    _form.currentState!.save();
     setState(() {
       _isLoading = true;
     });

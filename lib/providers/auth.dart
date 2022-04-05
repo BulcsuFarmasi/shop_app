@@ -8,10 +8,11 @@ import '../shared/api.dart';
 import '../shared/secret.dart';
 
 class Auth with ChangeNotifier {
+
   String? _token;
   DateTime? _expiryDate;
   String? _userId;
-  Timer? _authTimer;
+  late Timer _authTimer;
 
   bool get isAuth {
     return token != null;
@@ -41,7 +42,7 @@ class Auth with ChangeNotifier {
       _autoLogOut();
       notifyListeners();
       final prefs = await SharedPreferences.getInstance();
-      final userData = json.encode({'token': _token, 'userId': _userId,  'expiryDate':  _expiryDate?.toIso8601String()});
+      final userData = json.encode({'token': _token, 'userId': _userId,  'expiryDate':  _expiryDate!.toIso8601String()});
       await prefs.setString('userData', userData);
 
 
@@ -87,9 +88,8 @@ class Auth with ChangeNotifier {
     _token = null;
     _expiryDate = null;
     _userId = null;
-    if (_authTimer != null) {
-      _authTimer?.cancel();
-      _authTimer = null;
+    if (_authTimer.isActive) {
+      _authTimer.cancel();
     }
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
@@ -97,10 +97,7 @@ class Auth with ChangeNotifier {
   }
 
   void _autoLogOut() {
-    if (_authTimer != null) {
-      _authTimer?.cancel();
-    }
     final timeToExpiry = _expiryDate?.difference(DateTime.now()).inSeconds ?? 0;
-    Timer(Duration(seconds: timeToExpiry), logOut);
+    _authTimer = Timer(Duration(seconds: timeToExpiry), logOut);
   }
 }

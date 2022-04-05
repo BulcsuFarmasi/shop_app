@@ -21,10 +21,11 @@ class ProductItem extends StatelessWidget {
           onTap: () {
             navigator.pushNamed(ProductDetailScreen.routeName, arguments: product.id);
           },
-          child: Image.network(
-            product.imageUrl,
+          child: Hero(tag: product.id!, child: FadeInImage(
+            placeholder: AssetImage('assets/images/product-placeholder.png'),
+            image: NetworkImage(product.imageUrl),
             fit: BoxFit.cover,
-          ),
+          ),)
         ),
         footer: GridTileBar(
           backgroundColor: Colors.black87,
@@ -33,18 +34,17 @@ class ProductItem extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           leading: Consumer<Product>(
-            builder: (BuildContext ctx, Product product, _) =>
-                IconButton(
-                  icon: Icon((product.isFavorite) ? Icons.favorite : Icons.favorite_border),
-                  onPressed: () async {
-                    try {
-                      await product.toggleFavoriteStatus(auth.token!, auth.userId!);
-                    } catch (e) {
-                      scaffoldMessenger.showSnackBar(SnackBar(content: Text('Failed to make favorite')));
-                    }
-                  },
-                  color: theme.colorScheme.secondary,
-                ),
+            builder: (BuildContext ctx, Product product, _) => IconButton(
+              icon: Icon((product.isFavorite) ? Icons.favorite : Icons.favorite_border),
+              onPressed: () async {
+                try {
+                  await product.toggleFavoriteStatus(auth.token!, auth.userId!);
+                } catch (e) {
+                  scaffoldMessenger.showSnackBar(SnackBar(content: Text('Failed to make favorite')));
+                }
+              },
+              color: theme.colorScheme.secondary,
+            ),
           ),
           trailing: IconButton(
             icon: Icon(Icons.shopping_cart),
