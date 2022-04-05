@@ -50,7 +50,7 @@ class MainDrawer extends StatelessWidget {
               style: TextStyle(fontSize: 20),
             ),
             onTap: () {
-              navigator.push(CustomRoute(builder: (BuildContext) => OrdersScreen()));
+              navigator.pushReplacementNamed(OrdersScreen.routeName);
             },
           ),
           ListTile(
