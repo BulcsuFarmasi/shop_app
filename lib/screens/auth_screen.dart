@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/models/auth_exception.dart';
 import 'package:shop_app/shared/colors.dart';
-import '../providers/auth.dart';
-import '../shared/validators.dart';
+import 'package:shop_app/providers/auth.dart';
+import 'package:shop_app/shared/validators.dart';
 
 enum AuthMode { Signup, Login }
 

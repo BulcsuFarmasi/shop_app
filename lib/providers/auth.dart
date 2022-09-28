@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import '../models/auth_exception.dart';
-import '../shared/api.dart';
-import '../shared/secret.dart';
+import 'package:shop_app/models/auth_exception.dart';
+import 'package:shop_app/shared/api.dart';
+import 'package:shop_app/shared/secret.dart';
 
 class Auth with ChangeNotifier {
 

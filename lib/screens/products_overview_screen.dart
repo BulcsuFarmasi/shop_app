@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/widgets/main_drawer.dart';
 
-import '../providers/cart.dart';
-import '../providers/products.dart';
-import '../screens/cart_screen.dart';
-import '../widgets/products_grid.dart';
-import '../widgets/badge.dart';
+import 'package:shop_app/providers/cart.dart';
+import 'package:shop_app/providers/products.dart';
+import 'package:shop_app/screens/cart_screen.dart';
+import 'package:shop_app/widgets/products_grid.dart';
+import 'package:shop_app/widgets/badge.dart';
 
 class ProductOverviewScreen extends StatefulWidget {
   @override

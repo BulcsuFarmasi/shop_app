@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-import '../models/http_exception.dart';
-import '../shared/api.dart';
+import 'package:shop_app/models/http_exception.dart';
+import 'package:shop_app/shared/api.dart';
 
 class Product with ChangeNotifier {
   final String? id;
