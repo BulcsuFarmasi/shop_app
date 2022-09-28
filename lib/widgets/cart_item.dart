@@ -4,8 +4,13 @@ import 'package:provider/provider.dart';
 import 'package:shop_app/providers/cart.dart';
 
 class CartItem extends StatelessWidget {
-  CartItem(
-      {required this.id, required this.productId, required this.title, required this.price, required this.quantity});
+  CartItem({
+    required this.id,
+    required this.productId,
+    required this.title,
+    required this.price,
+    required this.quantity,
+  });
 
   final String id;
   final String productId;
@@ -15,7 +20,6 @@ class CartItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<Cart>(context, listen: false);
 
     return Dismissible(
       key: ValueKey(id),
@@ -39,18 +43,22 @@ class CartItem extends StatelessWidget {
                 title: Text('Are you sure?'),
                 content: Text('Do you to remove the item from the cart?'),
                 actions: [
-                  TextButton(onPressed: () {
-                    Navigator.pop(ctx, false);
-                  }, child: Text('No')),
-                  TextButton(onPressed: () {
-                    Navigator.pop(ctx, true);
-                  }, child: Text('Yes'))
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(ctx, false);
+                      },
+                      child: Text('No')),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(ctx, true);
+                      },
+                      child: Text('Yes'))
                 ],
               );
             });
       },
       onDismissed: (direction) {
-        cart.removeItem(productId);
+        Provider.of<Cart>(context, listen: false).removeItem(productId);
       },
       child: Card(
         margin: EdgeInsets.symmetric(horizontal: 15, vertical: 4),

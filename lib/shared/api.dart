@@ -22,6 +22,13 @@ class Api {
       _authEndPoints[endpoint] ?? "";
 }
 
-enum DbEndpoint { products, orders, userFavorites }
+enum DbEndpoint {
+  products,
+  orders,
+  userFavorites,
+}
 
-enum AuthEndpoint { signUp, signIn }
+enum AuthEndpoint {
+  signUp,
+  signIn,
+}

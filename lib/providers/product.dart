@@ -29,8 +29,12 @@ class Product with ChangeNotifier {
   Future<void> toggleFavoriteStatus(String token, String userId) async {
     final oldStatus = isFavorite;
     _setFavorite(!isFavorite);
-    final url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.userFavorites)}/$userId/$id.json?auth=$token');
-    final response = await http.put(url, body: json.encode(isFavorite));
+    final url = Uri.parse(
+        '${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.userFavorites)}/$userId/$id.json?auth=$token');
+    final response = await http.put(
+      url,
+      body: json.encode(isFavorite),
+    );
     if (response.statusCode > 400) {
       _setFavorite(oldStatus);
       throw HttpException('Could not favorite product');

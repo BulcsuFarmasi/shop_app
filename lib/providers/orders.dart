@@ -35,7 +35,8 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     notifyListeners();
-    final url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.orders)}/$userId/.json?auth=$authToken');
+    final url = Uri.parse(
+        '${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.orders)}/$userId/.json?auth=$authToken');
     final currentDate = DateTime.now();
     try {
       final response = await http.post(url,
@@ -47,14 +48,22 @@ class Orders with ChangeNotifier {
             },
           ));
       String orderId = json.decode(response.body)['name'];
-      _items.insert(0, Order(id: orderId, amount: total, items: cartProducts, date: currentDate));
+      _items.insert(
+          0,
+          Order(
+            id: orderId,
+            amount: total,
+            items: cartProducts,
+            date: currentDate,
+          ));
     } catch (e) {
       throw e;
     }
   }
 
   Future<void> fetchOrders() async {
-    final url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.orders)}/$userId/.json?auth=$authToken');
+    final url = Uri.parse(
+        '${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.orders)}/$userId/.json?auth=$authToken');
     final response = await http.get(url);
     try {
       final extractedData = json.decode(response.body) as Map<String, dynamic>?;
@@ -67,7 +76,11 @@ class Orders with ChangeNotifier {
         order['products'].forEach((product) => {
               products.add(CartItem(
                 product: Product(
-                    id: product['id'], title: product['title'], price: product['price'], description: '', imageUrl: ''),
+                    id: product['id'],
+                    title: product['title'],
+                    price: product['price'],
+                    description: '',
+                    imageUrl: ''),
                 quantity: product['quantity'],
               ))
             });

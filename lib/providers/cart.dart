@@ -20,10 +20,12 @@ class Cart with ChangeNotifier {
 
   Map<String, CartItem> get items => {..._items};
 
-  int get allProductCount => _items.values.fold(0, (int sum, CartItem currentItem) => sum += currentItem.quantity);
+  int get allProductCount => _items.values
+      .fold(0, (int sum, CartItem currentItem) => sum += currentItem.quantity);
 
   double get totalAmount {
-    return _items.values.fold(0, (double sum, item) => sum + item.product.price * item.quantity);
+    return _items.values.fold(
+        0, (double sum, item) => sum + item.product.price * item.quantity);
   }
 
   void addItem(Product product) {
@@ -52,7 +54,10 @@ class Cart with ChangeNotifier {
     }
     if (_items[productId]!.quantity > 1) {
       _items.update(
-          productId, (oldCartItem) => CartItem(product: oldCartItem.product, quantity: oldCartItem.quantity - 1));
+        productId,
+        (oldCartItem) => CartItem(
+            product: oldCartItem.product, quantity: oldCartItem.quantity - 1),
+      );
     } else {
       _items.remove(productId);
     }
