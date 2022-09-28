@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import '../models/http_exception.dart';
+import '../models/auth_exception.dart';
 import '../shared/api.dart';
 import '../shared/secret.dart';
 
@@ -15,15 +15,10 @@ class Auth with ChangeNotifier {
   late Timer _authTimer;
 
   bool get isAuth {
-    return token != null;
+    return _expiryDate != null && _expiryDate!.isAfter(DateTime.now()) && _token != null;
   }
 
-  String? get token {
-    if (_expiryDate != null && _expiryDate!.isAfter(DateTime.now()) && _token != null) {
-      return _token;
-    }
-    return null;
-  }
+  String? get token => _token;
 
   String? get userId => _userId;
 
@@ -34,7 +29,7 @@ class Auth with ChangeNotifier {
           await http.post(url, body: json.encode({'email': email, 'password': password, 'returnSecureToken': true}));
       final responseBody = json.decode(response.body);
       if (responseBody['error'] != null) {
-        throw HttpException(responseBody['error']['message']);
+        throw AuthException(responseBody['error']['message']);
       }
       _token = responseBody['idToken'];
       _userId = responseBody['localId'];

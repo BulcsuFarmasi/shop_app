@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/models/auth_exception.dart';
+import 'package:shop_app/shared/colors.dart';
 import '../models/http_exception.dart';
 import '../providers/auth.dart';
 import '../shared/validators.dart';
@@ -21,8 +23,8 @@ class AuthScreen extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color.fromRGBO(215, 117, 255, 1).withOpacity(0.5),
-                  Color.fromRGBO(255, 188, 117, 1).withOpacity(0.9),
+                  AppColors.primaryColor.withOpacity(0.5),
+                  AppColors.secondaryColor.withOpacity(0.9),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -46,7 +48,7 @@ class AuthScreen extends StatelessWidget {
                       // ..translate(-10.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: Colors.deepOrange.shade900,
+                        color: AppColors.primaryColor.shade900,
                         boxShadow: [
                           BoxShadow(
                             blurRadius: 8,
@@ -122,7 +124,7 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
     showDialog(
         context: context,
         builder: (BuildContext ctx) => AlertDialog(
-              title: Text('An error occured'),
+              title: Text('An error occurred'),
               content: Text(errorMessage),
               actions: [
                 TextButton(
@@ -151,29 +153,19 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
         // Sign user up
         await Provider.of<Auth>(context, listen: false).signUp(_authData['email']!, _authData['password']!);
       }
-    } on HttpException catch (error) {
-      String errorMessage = 'Authentication failed.';
-      if (error.message.contains('EMAIL_EXISTS')) {
-        errorMessage = 'This email is already in use';
-      } else if (error.message.contains('INVALID_EMAIL')) {
-        errorMessage = 'This is not a valid email address';
-      } else if (error.message.contains('WEAK_PASSWORD')) {
-        errorMessage = 'This password is too week';
-      } else if (error.message.contains('EMAIL_NOT_FOUND')) {
-        errorMessage = 'Could not find a user with that email';
-      }
-      _showErrorDialog(errorMessage);
+      //  isLoading is only needed to set to false in error case because on success page will be replaced
+    } on AuthException catch (error) {
+      _showErrorDialog(error.toString());
       setState(() {
         _isLoading = false;
       });
     } catch (e) {
       const errorMessage = 'Could not authenticate you, please try again later.';
       _showErrorDialog(errorMessage);
+      setState(() {
+        _isLoading = false;
+      });
     }
-    if (!mounted) return;
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   void _switchAuthMode() {
@@ -278,7 +270,7 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
                             borderRadius: BorderRadius.circular(30),
                           ),
                           padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                          primary: Theme.of(context).primaryColor,
+                          primary: Theme.of(context).colorScheme.primary,
                           textStyle: TextStyle(color: Theme.of(context).primaryTextTheme.button?.color),
                         ),
                       ),

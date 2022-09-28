@@ -1,18 +1,17 @@
 import 'package:flutter/foundation.dart';
+import 'package:shop_app/providers/product.dart';
 
 class CartItem {
-  final String id;
-  final String title;
+  final Product product;
   final int quantity;
-  final double price;
 
-  CartItem({required this.id, required this.title, required this.quantity, required this.price});
+  CartItem({required this.product, required this.quantity});
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
+        'id': product.id,
+        'title': product.title,
+        'price': product.price,
         'quantity': quantity,
-        'price': price,
       };
 }
 
@@ -24,23 +23,19 @@ class Cart with ChangeNotifier {
   int get allProductCount => _items.values.fold(0, (int sum, CartItem currentItem) => sum += currentItem.quantity);
 
   double get totalAmount {
-    return _items.values.fold(0, (double sum, item) => sum + item.price * item.quantity);
+    return _items.values.fold(0, (double sum, item) => sum + item.product.price * item.quantity);
   }
 
-  void addItem(String productId, double price, String title) {
+  void addItem(Product product) {
     _items.update(
-      productId,
+      product.id!,
       (CartItem item) => CartItem(
-        id: item.id,
-        title: item.title,
+        product: item.product,
         quantity: item.quantity + 1,
-        price: item.price,
       ),
       ifAbsent: () => CartItem(
-        id: productId,
-        title: title,
+        product: product,
         quantity: 1,
-        price: price,
       ),
     );
     notifyListeners();
@@ -57,12 +52,7 @@ class Cart with ChangeNotifier {
     }
     if (_items[productId]!.quantity > 1) {
       _items.update(
-          productId,
-          (oldCartItem) => CartItem(
-              id: oldCartItem.id,
-              title: oldCartItem.title,
-              quantity: oldCartItem.quantity - 1,
-              price: oldCartItem.price));
+          productId, (oldCartItem) => CartItem(product: oldCartItem.product, quantity: oldCartItem.quantity - 1));
     } else {
       _items.remove(productId);
     }

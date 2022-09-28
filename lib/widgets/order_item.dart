@@ -18,46 +18,58 @@ class _OrderItemState extends State<OrderItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(10),
-      child: Column(
-        children: [
-          ListTile(
-            title: Text('\$${widget.order.amount}'),
-            subtitle: Text(
-              DateFormat('dd/MM/yyyy hh:mm').format(widget.order.date),
+    final animationDuration = Duration(milliseconds: 300);
+    final animationCurve = Curves.easeInOut;
+    final double itemsHeight =  min(widget.order.items.length * 20 + 10, 100);
+    final listTileHeight = 95.0;
+
+    return AnimatedContainer(
+      duration: animationDuration,
+      curve: animationCurve,
+      height: _expanded ? listTileHeight + itemsHeight : listTileHeight,
+      child: Card(
+        margin: EdgeInsets.all(10),
+        child: Column(
+          children: [
+            ListTile(
+              title: Text('\$${widget.order.amount}'),
+              subtitle: Text(
+                DateFormat('dd/MM/yyyy hh:mm').format(widget.order.date),
+              ),
+              trailing: IconButton(
+                icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
+                onPressed: () {
+                  setState(() {
+                    _expanded = !_expanded;
+                  });
+                },
+              ),
             ),
-            trailing: IconButton(
-              icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
-              onPressed: () {
-                setState(() {
-                  _expanded = !_expanded;
-                });
-              },
-            ),
-          ),
-          AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            height: (_expanded) ? min(widget.order.products.length * 20 + 10, 100) : 0,
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-            child: ListView(
-                children: widget.order.products
-                    .map((product) => Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              product.title,
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              '${product.quantity} x \$${product.price}',
-                              style: TextStyle(fontSize: 18, color: Colors.grey),
-                            )
-                          ],
-                        ))
-                    .toList()),
-          )
-        ],
+            if (_expanded)
+            AnimatedContainer(
+              duration: animationDuration,
+              curve: animationCurve,
+              height: (_expanded) ? itemsHeight : 0,
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+              child: ListView(
+                  children: widget.order.items
+                      .map((item) => Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                item.product.title,
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                '${item.quantity} x \$${item.product.price}',
+                                style: TextStyle(fontSize: 18, color: Colors.grey),
+                              )
+                            ],
+                          ))
+                      .toList()),
+            )
+          ],
+        ),
       ),
     );
   }

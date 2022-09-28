@@ -21,31 +21,41 @@ class Products with ChangeNotifier {
 
   List<Product> get favoriteItems => items.where((Product product) => product.isFavorite).toList();
 
-
-
   Future<void> fetchProducts([bool filterByUser = false]) async {
     final filterString = filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : "";
-    Uri url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.products)}.json?auth=$authToken&$filterString');
-    final response = await http.get(url);
-    final extractedData = json.decode(response.body) as Map<String, dynamic>?;
-    if (extractedData == null) {
-      return;
+    final url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.products)}.json?auth=$authToken&$filterString');
+    try {
+      final response = await http.get(url);
+      final extractedData = json.decode(response.body) as Map<String, dynamic>?;
+      if (extractedData == null) {
+        return;
+      }
+      final favorites = await fetchFavorites();
+      final List<Product> loadedProducts = [];
+      extractedData.forEach((String id, dynamic product) {
+        loadedProducts.add(Product(
+            id: id,
+            title: product['title'],
+            description: product['description'],
+            price: product['price'],
+            isFavorite: favorites[id] ?? false,
+            imageUrl: product['imageUrl']));
+      });
+      _items = loadedProducts;
+      notifyListeners();
+    } catch (e) {
+      throw e;
     }
-    url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.userFavorites)}/$userId.json?auth=$authToken');
-    final favoritesResponse = await http.get(url);
-    final favorites = json.decode(favoritesResponse.body);
-    final List<Product> loadedProducts = [];
-    extractedData.forEach((String id, dynamic product) {
-      loadedProducts.add(Product(
-          id: id,
-          title: product['title'],
-          description: product['description'],
-          price: product['price'],
-          isFavorite: favorites?[id] ?? false,
-          imageUrl: product['imageUrl']));
-    });
-    _items = loadedProducts;
-    notifyListeners();
+  }
+
+  Future<Map<String, dynamic>> fetchFavorites() async {
+    try {
+      final url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.userFavorites)}/$userId.json?auth=$authToken');
+      final favoritesResponse = await http.get(url);
+      return json.decode(favoritesResponse.body);
+    } catch (e) {
+      throw e;
+    }
   }
 
   Future<void> addProduct(Product newProduct) async {
