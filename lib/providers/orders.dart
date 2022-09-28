@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop_app/providers/product.dart';
 
 import './cart.dart';
 import '../shared/api.dart';
@@ -9,13 +10,13 @@ import '../shared/api.dart';
 class Order {
   final String? id;
   final double amount;
-  final List<CartItem> products;
+  final List<CartItem> items;
   final DateTime date;
 
   Order({
     required this.id,
     required this.amount,
-    required this.products,
+    required this.items,
     required this.date,
   });
 }
@@ -27,7 +28,6 @@ class Orders with ChangeNotifier {
 
   final String? authToken;
   final String? userId;
-
 
   List<Order> get items {
     return [..._items];
@@ -47,7 +47,7 @@ class Orders with ChangeNotifier {
             },
           ));
       String orderId = json.decode(response.body)['name'];
-      _items.insert(0, Order(id: orderId, amount: total, products: cartProducts, date: currentDate));
+      _items.insert(0, Order(id: orderId, amount: total, items: cartProducts, date: currentDate));
     } catch (e) {
       throw e;
     }
@@ -66,18 +66,16 @@ class Orders with ChangeNotifier {
         final List<CartItem> products = [];
         order['products'].forEach((product) => {
               products.add(CartItem(
-                id: product['id'],
-                title: product['title'],
+                product: Product(
+                    id: product['id'], title: product['title'], price: product['price'], description: '', imageUrl: ''),
                 quantity: product['quantity'],
-                price: product['price'],
               ))
             });
-
 
         loadedOrders.add(Order(
           id: id,
           amount: order['amount'],
-          products: products,
+          items: products,
           date: DateTime.parse(order['date']),
         ));
       });

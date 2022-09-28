@@ -22,15 +22,18 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
 
   @override
   void didChangeDependencies() {
-    setState(() {
-      if (_isInit) {
+    if (_isInit) {
+      setState(() {
         _isLoading = true;
-        Provider.of<Products>(context).fetchProducts().then((_) {
-          _isLoading = false;
-        });
+
+        Provider.of<Products>(context).fetchProducts().catchError((_) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Couldn\'t load products')));
+        }).whenComplete(() => setState(() {
+              _isLoading = false;
+            }));
         _isInit = false;
-      }
-    });
+      });
+    }
     super.didChangeDependencies();
   }
 
