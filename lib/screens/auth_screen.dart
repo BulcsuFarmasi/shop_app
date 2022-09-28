@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/models/auth_exception.dart';
 import 'package:shop_app/shared/colors.dart';
-import '../models/http_exception.dart';
 import '../providers/auth.dart';
 import '../shared/validators.dart';
 
@@ -250,6 +249,7 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
                                     if (value != _passwordController.text) {
                                       return 'Passwords do not match!';
                                     }
+                                    return null;
                                   }
                                 : null,
                           ),
@@ -270,7 +270,7 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
                             borderRadius: BorderRadius.circular(30),
                           ),
                           padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                          primary: Theme.of(context).colorScheme.primary,
+                          backgroundColor: Theme.of(context).colorScheme.primary,
                           textStyle: TextStyle(color: Theme.of(context).primaryTextTheme.button?.color),
                         ),
                       ),
