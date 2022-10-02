@@ -1,9 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/providers/cart.dart' show Cart;
-import '../widgets/cart_item.dart';
-import '../providers/orders.dart';
+import 'package:shop_app/widgets/cart_item.dart';
+import 'package:shop_app/providers/orders.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
@@ -81,8 +80,6 @@ class _OrderButtonState extends State<OrderButton> {
 
   @override
   Widget build(BuildContext context) {
-    final orders = Provider.of<Orders>(context);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
     return TextButton(
         onPressed: ((widget.cart.totalAmount > 0 && widget.cart.items.values.isNotEmpty) && !_isLoading)
             ? () async {
@@ -90,10 +87,10 @@ class _OrderButtonState extends State<OrderButton> {
                   _isLoading = true;
                 });
                 try {
-                  await orders.addOrder(widget.cart.items.values.toList(), widget.cart.totalAmount);
+                  await Provider.of<Orders>(context).addOrder(widget.cart.items.values.toList(), widget.cart.totalAmount);
                   widget.cart.clear();
                 } catch (e) {
-                  scaffoldMessenger.showSnackBar(SnackBar(content: Text('Couldn\'t place order')));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Couldn\'t place order')));
                 } finally {
                   setState(() {
                     _isLoading = false;

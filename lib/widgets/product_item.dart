@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth.dart';
-import '../providers/product.dart';
-import '../providers/cart.dart';
-import '../screens/product_detail_screen.dart';
+import 'package:shop_app/providers/auth.dart';
+import 'package:shop_app/providers/product.dart';
+import 'package:shop_app/providers/cart.dart';
+import 'package:shop_app/screens/product_detail_screen.dart';
 
 class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final navigator = Navigator.of(context);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
     final auth = Provider.of<Auth>(context, listen: false);
@@ -19,7 +17,7 @@ class ProductItem extends StatelessWidget {
       child: GridTile(
         child: GestureDetector(
           onTap: () {
-            navigator.pushNamed(ProductDetailScreen.routeName, arguments: product.id);
+            Navigator.of(context).pushNamed(ProductDetailScreen.routeName, arguments: product.id);
           },
           child: Hero(tag: product.id!, child: FadeInImage(
             placeholder: AssetImage('assets/images/product-placeholder.png'),
@@ -40,7 +38,7 @@ class ProductItem extends StatelessWidget {
                 try {
                   await product.toggleFavoriteStatus(auth.token!, auth.userId!);
                 } catch (e) {
-                  scaffoldMessenger.showSnackBar(SnackBar(content: Text('Failed to make favorite')));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to make favorite')));
                 }
               },
               color: theme.colorScheme.secondary,

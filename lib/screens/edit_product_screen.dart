@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/products.dart';
-import '../providers/product.dart';
-import '../shared/validators.dart';
+import 'package:shop_app/providers/products.dart';
+import 'package:shop_app/providers/product.dart';
+import 'package:shop_app/shared/validators.dart';
 
 class EditProductScreen extends StatefulWidget {
 
@@ -50,7 +50,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   void didChangeDependencies() {
     if (_isInit) {
-      productId = ModalRoute.of(context)?.settings.arguments as String;
+      productId = ModalRoute.of(context)?.settings.arguments as String?;
       if (productId != null) {
         editingMode = EditingMode.edit;
         Product editedProduct = Provider.of<Products>(context, listen: false).findById(productId!);

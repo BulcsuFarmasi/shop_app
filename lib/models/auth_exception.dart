@@ -19,6 +19,9 @@ class AuthException implements Exception {
       case 'INVALID_EMAIL':
         authError = AuthError.invalidEmail;
         break;
+      case 'INVALID_PASSWORD':
+        authError = AuthError.invalidPassword;
+        break;
       case 'WEAK_PASSWORD':
         authError = AuthError.weakPassword;
         break;
@@ -26,6 +29,7 @@ class AuthException implements Exception {
         authError = AuthError.emailNotFound;
         break;
       default:
+        authError = AuthError.undefined;
     }
   }
 
@@ -38,6 +42,9 @@ class AuthException implements Exception {
         break;
       case AuthError.invalidEmail:
         errorMessage = 'This is not a valid email address';
+        break;
+      case AuthError.invalidPassword:
+        errorMessage = 'Wrong email or password';
         break;
       case AuthError.weakPassword:
         errorMessage = 'This password is too week';
@@ -57,4 +64,4 @@ class AuthException implements Exception {
 
 
 
-enum AuthError { emailExists, invalidEmail, weakPassword, emailNotFound , undefined }
+enum AuthError { emailExists, invalidEmail, invalidPassword, weakPassword, emailNotFound, undefined }

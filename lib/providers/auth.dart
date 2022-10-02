@@ -3,44 +3,54 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import '../models/auth_exception.dart';
-import '../shared/api.dart';
-import '../shared/secret.dart';
+import 'package:shop_app/models/auth_exception.dart';
+import 'package:shop_app/shared/api.dart';
+import 'package:shop_app/shared/secret.dart';
 
 class Auth with ChangeNotifier {
-
   String? _token;
   DateTime? _expiryDate;
   String? _userId;
   late Timer _authTimer;
 
   bool get isAuth {
-    return _expiryDate != null && _expiryDate!.isAfter(DateTime.now()) && _token != null;
+    return _expiryDate != null &&
+        _expiryDate!.isAfter(DateTime.now()) &&
+        _token != null;
   }
 
   String? get token => _token;
 
   String? get userId => _userId;
 
-  Future<void> _authenticate(String email, String password, AuthEndpoint endpoint) async {
-    final url = Uri.parse('${Api.authUrl}:${Api.getAuthEndpoint(endpoint)}?key=$firebaseApiKey');
+  Future<void> _authenticate(
+      String email, String password, AuthEndpoint endpoint) async {
+    final url = Uri.parse(
+        '${Api.authUrl}:${Api.getAuthEndpoint(endpoint)}?key=$firebaseApiKey');
     try {
-      final response =
-          await http.post(url, body: json.encode({'email': email, 'password': password, 'returnSecureToken': true}));
+      final response = await http.post(url,
+          body: json.encode({
+            'email': email,
+            'password': password,
+            'returnSecureToken': true,
+          }));
       final responseBody = json.decode(response.body);
       if (responseBody['error'] != null) {
         throw AuthException(responseBody['error']['message']);
       }
       _token = responseBody['idToken'];
       _userId = responseBody['localId'];
-      _expiryDate = DateTime.now().add(Duration(seconds: int.parse(responseBody['expiresIn'])));
+      _expiryDate = DateTime.now()
+          .add(Duration(seconds: int.parse(responseBody['expiresIn'])));
       _autoLogOut();
       notifyListeners();
       final prefs = await SharedPreferences.getInstance();
-      final userData = json.encode({'token': _token, 'userId': _userId,  'expiryDate':  _expiryDate!.toIso8601String()});
+      final userData = json.encode({
+        'token': _token,
+        'userId': _userId,
+        'expiryDate': _expiryDate!.toIso8601String()
+      });
       await prefs.setString('userData', userData);
-
-
     } catch (error) {
       throw error;
     }
@@ -60,9 +70,9 @@ class Auth with ChangeNotifier {
       return false;
     }
 
-    final extractedUserData = json.decode(prefs.getString('userData') ?? "") as Map<String, dynamic>;
+    final extractedUserData =
+        json.decode(prefs.getString('userData') ?? "") as Map<String, dynamic>;
     final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
-
 
     if (expiryDate.isBefore(DateTime.now())) {
       return false;
@@ -73,8 +83,6 @@ class Auth with ChangeNotifier {
 
     _autoLogOut();
     notifyListeners();
-
-
 
     return true;
   }
