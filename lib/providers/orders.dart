@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop_app/providers/product.dart';
 
-import 'package:shop_app/providers//cart.dart';
+import 'package:shop_app/providers/cart.dart';
 import 'package:shop_app/shared/api.dart';
 
 class Order {

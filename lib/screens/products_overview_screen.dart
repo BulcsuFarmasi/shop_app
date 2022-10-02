@@ -26,7 +26,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
         _isLoading = true;
 
         Provider.of<Products>(context).fetchProducts().catchError((_) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Couldn\'t load products')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Couldn't load products")));
         }).whenComplete(() => setState(() {
               _isLoading = false;
             }));

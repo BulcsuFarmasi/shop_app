@@ -50,7 +50,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   void didChangeDependencies() {
     if (_isInit) {
-      productId = ModalRoute.of(context)?.settings.arguments as String;
+      productId = ModalRoute.of(context)?.settings.arguments as String?;
       if (productId != null) {
         editingMode = EditingMode.edit;
         Product editedProduct = Provider.of<Products>(context, listen: false).findById(productId!);

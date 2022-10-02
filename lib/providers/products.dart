@@ -15,15 +15,19 @@ class Products with ChangeNotifier {
 
   List<Product> _items = [];
 
-  Product findById(String id) => _items.firstWhere((Product item) => item.id == id);
+  Product findById(String id) =>
+      _items.firstWhere((Product item) => item.id == id);
 
   List<Product> get items => [..._items];
 
-  List<Product> get favoriteItems => items.where((Product product) => product.isFavorite).toList();
+  List<Product> get favoriteItems =>
+      items.where((Product product) => product.isFavorite).toList();
 
   Future<void> fetchProducts([bool filterByUser = false]) async {
-    final filterString = filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : "";
-    final url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.products)}.json?auth=$authToken&$filterString');
+    final filterString =
+        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : "";
+    final url = Uri.parse(
+        '${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.products)}.json?auth=$authToken&$filterString');
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>?;
@@ -43,23 +47,27 @@ class Products with ChangeNotifier {
       });
       _items = loadedProducts;
       notifyListeners();
-    } catch (e) {
+    } catch (e, stacktrace) {
       throw e;
     }
   }
 
   Future<Map<String, dynamic>> fetchFavorites() async {
     try {
-      final url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.userFavorites)}/$userId.json?auth=$authToken');
+      final url = Uri.parse(
+          '${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.userFavorites)}/$userId.json?auth=$authToken');
       final favoritesResponse = await http.get(url);
-      return json.decode(favoritesResponse.body);
+      return (favoritesResponse.body == "null")
+          ? {}
+          : json.decode(favoritesResponse.body);
     } catch (e) {
       throw e;
     }
   }
 
   Future<void> addProduct(Product newProduct) async {
-    final url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.products)}.json?auth=$authToken');
+    final url = Uri.parse(
+        '${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.products)}.json?auth=$authToken');
     try {
       final response = await http.post(url,
           body: json.encode({
@@ -84,10 +92,11 @@ class Products with ChangeNotifier {
   }
 
   Future<void> updateProduct(Product updateProduct) async {
-    final productIndex = _items.indexWhere((Product product) => product.id == updateProduct.id);
+    final productIndex =
+        _items.indexWhere((Product product) => product.id == updateProduct.id);
     if (productIndex >= 0) {
-      final url =
-          Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.products)}/${updateProduct.id}.json?auth=$authToken');
+      final url = Uri.parse(
+          '${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.products)}/${updateProduct.id}.json?auth=$authToken');
       await http.patch(url,
           body: json.encode({
             'title': updateProduct.title,
@@ -103,8 +112,10 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url = Uri.parse('${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.products)}/$id.json?auth=$authToken');
-    final existingProductIndex = _items.indexWhere((product) => product.id == id);
+    final url = Uri.parse(
+        '${Api.dbUrl}/${Api.getDbEndpoint(DbEndpoint.products)}/$id.json?auth=$authToken');
+    final existingProductIndex =
+        _items.indexWhere((product) => product.id == id);
     Product? existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex);
     notifyListeners();

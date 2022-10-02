@@ -42,8 +42,10 @@ class AuthScreen extends StatelessWidget {
                   Flexible(
                     child: Container(
                       margin: EdgeInsets.only(bottom: 20.0),
-                      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 94.0),
-                      transform: Matrix4.rotationZ(-8 * pi / 180)..translate(-10.0),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 94.0),
+                      transform: Matrix4.rotationZ(-8 * pi / 180)
+                        ..translate(-10.0),
                       // ..translate(-10.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
@@ -90,7 +92,8 @@ class AuthCard extends StatefulWidget {
   _AuthCardState createState() => _AuthCardState();
 }
 
-class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin {
+class _AuthCardState extends State<AuthCard>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey();
   AuthMode _authMode = AuthMode.Login;
   Map<String, String> _authData = {
@@ -106,11 +109,12 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    _controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
     _slideAnimation = Tween<Offset>(begin: Offset(0, -1.5), end: Offset(0, 0))
         .animate(CurvedAnimation(parent: _controller, curve: Curves.linear));
-    _opacityAnimation =
-        Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+    _opacityAnimation = Tween<double>(begin: 0, end: 1)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
   }
 
   @override
@@ -145,12 +149,13 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
       _isLoading = true;
     });
     try {
+      final authProvider = Provider.of(context, listen: false);
       if (_authMode == AuthMode.Login) {
         // Log user in
-        await Provider.of<Auth>(context, listen: false).signIn(_authData['email']!, _authData['password']!);
+        await authProvider.signIn(_authData['email']!, _authData['password']!);
       } else {
         // Sign user up
-        await Provider.of<Auth>(context, listen: false).signUp(_authData['email']!, _authData['password']!);
+        await authProvider.signUp(_authData['email']!, _authData['password']!);
       }
       //  isLoading is only needed to set to false in error case because on success page will be replaced
     } on AuthException catch (error) {
@@ -159,7 +164,8 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
         _isLoading = false;
       });
     } catch (e) {
-      const errorMessage = 'Could not authenticate you, please try again later.';
+      const errorMessage =
+          'Could not authenticate you, please try again later.';
       _showErrorDialog(errorMessage);
       setState(() {
         _isLoading = false;
@@ -183,7 +189,6 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final deviceSize = MediaQuery.of(context).size;
     return Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -193,8 +198,9 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
             duration: Duration(milliseconds: 300),
             curve: Curves.linear,
             height: _authMode == AuthMode.Signup ? 320 : 260,
-            constraints: BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
-            width: deviceSize.width * 0.75,
+            constraints: BoxConstraints(
+                minHeight: _authMode == AuthMode.Signup ? 320 : 260),
+            width: MediaQuery.of(context).size.width * 0.75,
             padding: EdgeInsets.all(16.0),
             child: Form(
               key: _formKey,
@@ -242,7 +248,8 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
                           position: _slideAnimation,
                           child: TextFormField(
                             enabled: _authMode == AuthMode.Signup,
-                            decoration: InputDecoration(labelText: 'Confirm Password'),
+                            decoration:
+                                InputDecoration(labelText: 'Confirm Password'),
                             obscureText: true,
                             validator: _authMode == AuthMode.Signup
                                 ? (value) {
@@ -263,23 +270,33 @@ class _AuthCardState extends State<AuthCard> with SingleTickerProviderStateMixin
                       CircularProgressIndicator()
                     else
                       ElevatedButton(
-                        child: Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
+                        child: Text(
+                            _authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
                         onPressed: _submit,
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
-                          padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                          backgroundColor: Theme.of(context).colorScheme.primary,
-                          textStyle: TextStyle(color: Theme.of(context).primaryTextTheme.button?.color),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 30.0, vertical: 8.0),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          textStyle: TextStyle(
+                              color: Theme.of(context)
+                                  .primaryTextTheme
+                                  .button
+                                  ?.color),
                         ),
                       ),
                     TextButton(
-                      child: Text('${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
+                      child: Text(
+                          '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
                       onPressed: _switchAuthMode,
                       style: TextButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-                        textStyle: TextStyle(color: Theme.of(context).primaryColor),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
+                        textStyle:
+                            TextStyle(color: Theme.of(context).primaryColor),
                       ),
                     ),
                   ],

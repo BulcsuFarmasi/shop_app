@@ -9,7 +9,6 @@ class MainDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final mediaQuery = MediaQuery.of(context);
     final navigator = Navigator.of(context);
     return Drawer(
       backgroundColor: Colors.white,
@@ -24,7 +23,7 @@ class MainDrawer extends StatelessWidget {
             height: 84,
             alignment: Alignment.center,
             decoration: BoxDecoration(color: theme.colorScheme.primary),
-            padding: EdgeInsets.only(top: mediaQuery.padding.top),
+            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
           ),
           ListTile(
             leading: Icon(
@@ -75,8 +74,8 @@ class MainDrawer extends StatelessWidget {
               style: TextStyle(fontSize: 20),
             ),
             onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pushReplacementNamed('/');
+              navigator.pop();
+              navigator.pushReplacementNamed('/');
               Provider.of<Auth>(context, listen: false).logOut();
             },
           ),
